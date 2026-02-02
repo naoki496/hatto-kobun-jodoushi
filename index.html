@@ -3,28 +3,32 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0c10" />
-  <title>八東助動詞</title>
+  <meta name="theme-color" content="#07080b" />
+  <title>八東助動詞修行</title>
 
-  <!-- ========= 八東国語LOBBY Cyber UI (Template) ========= -->
+  <!-- （任意）PWAを使っている場合：manifestがあるなら有効に -->
+  <!-- <link rel="manifest" href="./manifest.json"> -->
+
   <style>
     :root{
       --bg:#07080b;
       --panel:rgba(255,255,255,.06);
       --panel2:rgba(255,255,255,.10);
       --border:rgba(255,255,255,.14);
-      --text:rgba(255,255,255,.90);
+      --text:rgba(255,255,255,.92);
       --muted:rgba(255,255,255,.62);
       --accent:#B56CFF;       /* violet */
-      --accent2:#62d6ff;      /* cyan-ish */
-      --danger:#ff5c7a;
+      --accent2:#62d6ff;      /* cyan */
       --ok:#5cffb7;
+      --danger:#ff5c7a;
       --radius:18px;
       --shadow:0 18px 60px rgba(0,0,0,.45);
       --minTap:44px;
       --maxW:980px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN","Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", "Meiryo", sans-serif;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+              "Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",
+              "Yu Gothic UI","Yu Gothic","Meiryo",sans-serif;
     }
 
     html,body{height:100%;}
@@ -113,6 +117,7 @@
     .card{
       padding:16px 14px;
     }
+
     .cardHeader{
       display:flex;
       justify-content:space-between;
@@ -120,12 +125,14 @@
       gap:10px;
       margin-bottom:10px;
     }
+
     .deckMeta{
       display:flex;
       flex-wrap:wrap;
       gap:8px;
       color:var(--muted);
       font-size:12px;
+      align-items:center;
     }
     .deckMeta code{
       font-family:var(--mono);
@@ -136,6 +143,74 @@
       padding:3px 6px;
       border-radius:8px;
     }
+
+    .pulse5{ position:relative; }
+    .pulse5::after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius:inherit;
+      border:1px solid rgba(181,108,255,.50);
+      animation:pulse 1.7s ease-in-out infinite;
+      pointer-events:none;
+    }
+    @keyframes pulse{
+      0%{ opacity:.15; box-shadow:0 0 0 0 rgba(181,108,255,.0); }
+      50%{ opacity:.55; box-shadow:0 0 0 8px rgba(181,108,255,.10); }
+      100%{ opacity:.15; box-shadow:0 0 0 0 rgba(181,108,255,.0); }
+    }
+
+    /* Flashcard */
+    .fc{
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:18px;
+      background:rgba(255,255,255,.04);
+      overflow:hidden;
+    }
+
+    .fcTop{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .status{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+    .status strong{ color:rgba(255,255,255,.86); }
+    .navArrows{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    .fcBody{
+      padding:16px 14px 18px;
+      min-height:170px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .front{
+      font-size:20px;
+      letter-spacing:.02em;
+      line-height:1.42;
+      white-space:pre-wrap;
+    }
+    .back{
+      font-size:16px;
+      color:rgba(255,255,255,.82);
+      line-height:1.60;
+      white-space:pre-wrap;
+      padding-top:10px;
+      border-top:1px dashed rgba(255,255,255,.14);
+      display:none;
+    }
+    .back.show{ display:block; }
 
     .hintRow{
       display:flex;
@@ -176,7 +251,7 @@
       border-radius:14px;
       min-height:var(--minTap);
       padding:10px 14px;
-      font-weight:600;
+      font-weight:700;
       letter-spacing:.01em;
       cursor:pointer;
       transition: transform .06s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
@@ -194,9 +269,7 @@
       border-color:rgba(181,108,255,.55);
       box-shadow:0 0 0 2px rgba(181,108,255,.18);
     }
-    .secondaryBtn{
-      background:rgba(255,255,255,.05);
-    }
+    .secondaryBtn{ background:rgba(255,255,255,.05); }
     .ghostBtn{
       background:transparent;
       border-style:dashed;
@@ -207,6 +280,17 @@
       border-color:rgba(92,255,183,.55);
       background:rgba(92,255,183,.10);
       box-shadow:0 0 0 2px rgba(92,255,183,.14);
+    }
+
+    .miniBtn{
+      min-width:44px;
+      min-height:44px;
+      padding:0;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      line-height:1;
     }
 
     .toast{
@@ -224,6 +308,8 @@
       pointer-events:none;
       transition: opacity .18s ease, transform .18s ease;
       z-index:9999;
+      max-width:min(92vw, 680px);
+      text-align:center;
     }
     .toast.show{
       opacity:1;
@@ -231,13 +317,16 @@
     }
 
     /* スワイプの誤爆（縦スクロール）対策 */
-    .swipeArea{
-      touch-action: pan-y;
+    .swipeArea{ touch-action: pan-y; }
+
+    .smallNote{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.55;
+      margin-top:8px;
     }
 
-    details{
-      margin-top:12px;
-    }
+    details{ margin-top:12px; }
     summary{
       cursor:pointer;
       color:rgba(255,255,255,.85);
@@ -249,6 +338,7 @@
       list-style:none;
     }
     summary::-webkit-details-marker{ display:none; }
+
     .maint{
       padding:14px;
       border:1px solid var(--border);
@@ -260,22 +350,26 @@
       line-height:1.55;
     }
 
-    .pulse5{
-      position:relative;
+    input[type="file"]{
+      display:block;
+      width:100%;
+      margin-top:10px;
+      color:rgba(255,255,255,.84);
     }
-    .pulse5::after{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      border-radius:inherit;
-      border:1px solid rgba(181,108,255,.50);
-      animation:pulse 1.7s ease-in-out infinite;
-      pointer-events:none;
+    .row2{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top:10px;
     }
-    @keyframes pulse{
-      0%{ opacity:.15; box-shadow:0 0 0 0 rgba(181,108,255,.0); }
-      50%{ opacity:.55; box-shadow:0 0 0 8px rgba(181,108,255,.10); }
-      100%{ opacity:.15; box-shadow:0 0 0 0 rgba(181,108,255,.0); }
+    @media (min-width: 740px){
+      .row2{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .mono{
+      font-family:var(--mono);
+      font-size:12px;
+      color:rgba(255,255,255,.80);
     }
   </style>
 </head>
@@ -284,15 +378,14 @@
   <div class="wrap swipeArea" id="swipeRoot">
     <div class="topbar">
       <div class="brand">
-        <h1>八東助動詞</h1>
-        <div class="sub">八東国語LOBBY準拠 / 暗色サイバーUI / スワイプ対応 / BGM（初期OFF）</div>
+        <h1>八東助動詞修行</h1>
+        <div class="sub">八東国語LOBBY準拠 / 左右スワイプ / BGM（初期OFF）</div>
       </div>
 
       <div class="kpis">
-        <!-- 既存ロジックが更新している要素があれば、ここに同じIDで差し替えてください -->
-        <div class="pill"><span class="dot"></span><span>カード枚数：</span><strong id="kpiTotal">-</strong></div>
-        <div class="pill"><span class="dot cyan"></span><span>今日見た枚数：</span><strong id="kpiToday">-</strong></div>
-        <div class="pill"><span class="dot ok"></span><span>デッキ：</span><strong id="kpiDeck">-</strong></div>
+        <div class="pill"><span class="dot"></span><span>総数：</span><strong id="kpiTotal">-</strong></div>
+        <div class="pill"><span class="dot cyan"></span><span>今日：</span><strong id="kpiToday">-</strong></div>
+        <div class="pill"><span class="dot ok"></span><span>デッキ：</span><strong id="kpiDeck">default</strong></div>
       </div>
     </div>
 
@@ -300,7 +393,8 @@
       <section class="glass card pulse5" id="uiCardPanel">
         <div class="cardHeader">
           <div class="deckMeta">
-            <span>最終更新：</span><code id="kpiUpdated">-</code>
+            <span>CSV：</span><code id="kpiCsv">deck_default.csv</code>
+            <span>更新：</span><code id="kpiUpdated">-</code>
           </div>
 
           <!-- BGM -->
@@ -310,15 +404,35 @@
           </audio>
         </div>
 
-        <!-- =========================
-          ここに「既存のカード表示DOM」を入れる
-          例：問題/答え表示、状態表示、ロード表示など
-          ========================= -->
-        <div id="legacyMount">
-          <!-- LEGACY UI START -->
-          <!-- ✅ 助動詞リポの現行 index.html から、カード表示やボタン群のDOMを“そのまま”コピペ -->
-          <!-- 例：「起動中…」「読み込み中…」等の表示、カード本文、進捗表示、デッキ情報など -->
-          <!-- LEGACY UI END -->
+        <div class="fc" id="cardBox" aria-live="polite">
+          <div class="fcTop">
+            <div class="status" id="statusText">
+              <strong id="idxText">-</strong>
+              <span style="opacity:.45;">/</span>
+              <span id="totalText">-</span>
+              <span style="opacity:.45;">・</span>
+              <span id="seenText">seen: -</span>
+            </div>
+            <div class="navArrows">
+              <button class="secondaryBtn miniBtn" id="btnPrev" type="button" data-action="prev" aria-label="前へ戻る">←</button>
+              <button class="secondaryBtn miniBtn" id="btnNext" type="button" data-action="next" aria-label="次へ">→</button>
+            </div>
+          </div>
+
+          <div class="fcBody">
+            <div class="front" id="frontText">読み込み中…</div>
+            <div class="back" id="backText"></div>
+
+            <div class="btnRow">
+              <button class="primaryBtn" id="btnToggle" type="button">答えを見る</button>
+              <button class="secondaryBtn" id="btnShuffle" type="button">シャッフル</button>
+              <button class="ghostBtn" id="btnResetToday" type="button">今日カウントをリセット</button>
+            </div>
+
+            <div class="smallNote" id="noteText">
+              まず <span class="mono">deck_default.csv</span> を読み込みます。BGMはボタン操作後に再生できます。
+            </div>
+          </div>
         </div>
 
         <div class="hintRow">
@@ -329,31 +443,41 @@
             <span style="opacity:.45;">/</span>
             <span>swipe</span>
           </div>
-          <div id="uiHintRight" class="swipeHint" style="justify-content:flex-end;">
-            <span style="opacity:.7;">ヒント：</span><span>初回は自動読み込み</span>
+          <div class="swipeHint" style="justify-content:flex-end;">
+            <span style="opacity:.7;">操作：</span><span>左右スワイプ対応</span>
           </div>
-        </div>
-
-        <!-- =========================
-          ここは“見た目のボタン”を置きたい場合に使用
-          既存ボタンをここに移してもOK（id保持で）
-          ========================= -->
-        <div class="btnRow" id="uiBtnRow">
-          <!-- UIボタンをここにまとめたい場合は、既存ボタンを移動してOK -->
-          <!-- 既存ロジックが要素IDに依存しているならIDは絶対に保持 -->
         </div>
       </section>
 
       <details>
         <summary>メンテ用（通常は生徒は触らない）</summary>
         <div class="maint">
-          <div style="margin-bottom:10px;">
-            PWA / キャッシュでUIが反映されない場合：SW更新 → ハードリロード → サイトデータ削除。
-          </div>
           <div>
-            <!-- LEGACY MAINT START -->
-            <!-- ✅ 既存の「CSVインポート/書き出し/初期化/既定デッキに戻す」等のDOMをここへ -->
-            <!-- LEGACY MAINT END -->
+            <strong>UIが変わらない／更新が反映されない：</strong><br>
+            PWAキャッシュの可能性が高いです。SW更新 → ハードリロード → サイトデータ削除で確認してください。
+          </div>
+
+          <div class="row2">
+            <div class="glass" style="padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);box-shadow:none;">
+              <div style="font-weight:700;color:rgba(255,255,255,.86);">CSVを手動インポート</div>
+              <div class="smallNote">列名は柔軟に解釈します（front/back、question/answer、term/meaning等）。</div>
+              <input type="file" id="fileCsv" accept=".csv,text/csv" />
+              <div class="btnRow">
+                <button class="secondaryBtn" id="btnLoadDefault" type="button">デフォルトCSVを再読込</button>
+              </div>
+            </div>
+
+            <div class="glass" style="padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);box-shadow:none;">
+              <div style="font-weight:700;color:rgba(255,255,255,.86);">データ初期化</div>
+              <div class="smallNote">
+                進捗（見た記録）と今日カウントを初期化します。<br>
+                ※学習用端末を使い回す場合のみ。
+              </div>
+              <div class="btnRow">
+                <button class="ghostBtn" id="btnResetAll" type="button">全て初期化</button>
+              </div>
+              <div class="smallNote mono">Storage key prefix: <span id="storageKeyHint"></span></div>
+            </div>
           </div>
         </div>
       </details>
@@ -362,132 +486,591 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- ========= UX add-on: Swipe + BGM + Hints ========= -->
   <script>
-    (function(){
-      const root = document.getElementById("swipeRoot");
-      const toast = document.getElementById("toast");
+    /********************
+     * 基本設定（助動詞）
+     ********************/
+    const STORAGE_PREFIX = "hattoJodoushiFlash.v1";  // ※衝突回避のため助動詞専用
+    const KEY_STATE      = STORAGE_PREFIX + ".state";
+    const KEY_SEEN       = STORAGE_PREFIX + ".seenIds";
+    const KEY_TODAY      = STORAGE_PREFIX + ".today";
+    const KEY_TODAY_DATE = STORAGE_PREFIX + ".todayDate";
 
-      function showToast(msg){
-        if(!toast) return;
-        toast.textContent = msg;
-        toast.classList.add("show");
-        clearTimeout(showToast._t);
-        showToast._t = setTimeout(()=>toast.classList.remove("show"), 1100);
+    // ✅ デフォルト読み込み：deck_default.csv 固定
+    const DEFAULT_CSV_CANDIDATES = [
+      "./deck_default.csv",
+      "./assets/deck_default.csv",
+    ];
+
+    /********************
+     * UI参照
+     ********************/
+    const $ = (id)=>document.getElementById(id);
+
+    const elFront = $("frontText");
+    const elBack  = $("backText");
+    const elIdx   = $("idxText");
+    const elTotal = $("totalText");
+    const elSeen  = $("seenText");
+    const elKpiTotal = $("kpiTotal");
+    const elKpiToday = $("kpiToday");
+    const elKpiUpdated = $("kpiUpdated");
+    const elKpiCsv = $("kpiCsv");
+    const elToast = $("toast");
+
+    const btnPrev = $("btnPrev");
+    const btnNext = $("btnNext");
+    const btnToggle = $("btnToggle");
+    const btnShuffle = $("btnShuffle");
+    const btnResetToday = $("btnResetToday");
+    const btnResetAll = $("btnResetAll");
+    const btnLoadDefault = $("btnLoadDefault");
+    const fileCsv = $("fileCsv");
+
+    const btnBgm = $("btnBgm");
+    const audioBgm = $("bgmAudio");
+
+    $("storageKeyHint").textContent = STORAGE_PREFIX;
+
+    /********************
+     * 状態
+     ********************/
+    let cards = [];     // {id, front, back}
+    let order = [];     // indices
+    let idx = 0;        // order index
+    let showBack = false;
+
+    function todayKey(){
+      // 端末ローカル日付（ISO YYYY-MM-DD）
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const day = String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function showToast(msg){
+      if(!elToast) return;
+      elToast.textContent = msg;
+      elToast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(()=>elToast.classList.remove("show"), 1100);
+    }
+
+    function loadJSON(key, fallback){
+      try{
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      }catch{
+        return fallback;
       }
+    }
+    function saveJSON(key, val){
+      localStorage.setItem(key, JSON.stringify(val));
+    }
 
-      // ---- BGM toggle (初期OFF) ----
-      const btnBgm = document.getElementById("btnBgm");
-      const audio  = document.getElementById("bgmAudio");
-      if(btnBgm && audio){
-        btnBgm.addEventListener("click", async ()=>{
-          try{
-            if(btnBgm.dataset.on === "true"){
-              audio.pause();
-              btnBgm.dataset.on = "false";
-              btnBgm.textContent = "BGM: OFF";
-              showToast("BGMを停止");
-            }else{
-              await audio.play(); // ユーザー操作起点
-              btnBgm.dataset.on = "true";
-              btnBgm.textContent = "BGM: ON";
-              showToast("BGMを再生");
-            }
-          }catch(e){
-            showToast("BGMを再生できません（端末設定/操作起点を確認）");
+    function getSeenSet(){
+      const arr = loadJSON(KEY_SEEN, []);
+      return new Set(arr);
+    }
+    function setSeenSet(set){
+      saveJSON(KEY_SEEN, Array.from(set));
+    }
+
+    function getTodayCount(){
+      const t = todayKey();
+      const savedDate = localStorage.getItem(KEY_TODAY_DATE);
+      if(savedDate !== t){
+        localStorage.setItem(KEY_TODAY_DATE, t);
+        localStorage.setItem(KEY_TODAY, "0");
+        return 0;
+      }
+      return Number(localStorage.getItem(KEY_TODAY) || "0") || 0;
+    }
+    function incTodayCount(){
+      const c = getTodayCount() + 1;
+      localStorage.setItem(KEY_TODAY, String(c));
+      return c;
+    }
+    function resetTodayCount(){
+      localStorage.setItem(KEY_TODAY_DATE, todayKey());
+      localStorage.setItem(KEY_TODAY, "0");
+      return 0;
+    }
+
+    function persistState(){
+      saveJSON(KEY_STATE, { idx, order, showBack });
+    }
+    function restoreState(){
+      const st = loadJSON(KEY_STATE, null);
+      if(!st) return;
+      if(Array.isArray(st.order)) order = st.order;
+      if(Number.isInteger(st.idx)) idx = st.idx;
+      if(typeof st.showBack === "boolean") showBack = st.showBack;
+    }
+
+    /********************
+     * CSV 処理（簡易・堅牢）
+     ********************/
+    function normalizeHeader(h){
+      return String(h||"").trim().toLowerCase()
+        .replace(/\s+/g,"")
+        .replace(/[＿_]/g,"_");
+    }
+
+    function parseCSV(text){
+      // RFC完全準拠ではないが、教育用途のCSVに十分な堅牢性を持たせる
+      // ・ダブルクォート囲み
+      // ・カンマ区切り
+      // ・改行は \n / \r\n
+      const rows = [];
+      let i=0, field="", row=[], inQuotes=false;
+
+      while(i < text.length){
+        const c = text[i];
+
+        if(inQuotes){
+          if(c === '"'){
+            if(text[i+1] === '"'){ field += '"'; i += 2; continue; }
+            inQuotes = false; i++; continue;
           }
-        });
+          field += c; i++; continue;
+        }else{
+          if(c === '"'){ inQuotes = true; i++; continue; }
+          if(c === ','){ row.push(field); field=""; i++; continue; }
+          if(c === '\n'){
+            row.push(field); field="";
+            // row が空行っぽい場合は除外
+            if(row.some(v => String(v).trim() !== "")) rows.push(row);
+            row = [];
+            i++; continue;
+          }
+          if(c === '\r'){ i++; continue; }
+          field += c; i++; continue;
+        }
+      }
+      // last
+      row.push(field);
+      if(row.some(v => String(v).trim() !== "")) rows.push(row);
+
+      if(rows.length === 0) return [];
+
+      // header
+      const header = rows[0].map(normalizeHeader);
+      const dataRows = rows.slice(1);
+
+      const frontKeys = new Set(["front","question","q","term","word","表","おもて","問題","語","語句"]);
+      const backKeys  = new Set(["back","answer","a","meaning","definition","裏","うら","解答","答え","意味","説明","訳"]);
+
+      const frontIdx = header.findIndex(h => frontKeys.has(h));
+      const backIdx  = header.findIndex(h => backKeys.has(h));
+
+      // ヘッダが無い/崩れている場合は「1列目=表、2列目=裏」とみなす
+      const useHeader = (frontIdx !== -1 || backIdx !== -1);
+
+      const out = [];
+      for(let r=0; r<dataRows.length; r++){
+        const cols = dataRows[r];
+        const f = useHeader ? (cols[frontIdx] ?? "") : (cols[0] ?? "");
+        const b = useHeader ? (cols[backIdx]  ?? "") : (cols[1] ?? "");
+        const front = String(f ?? "").trim();
+        const back  = String(b ?? "").trim();
+        if(!front && !back) continue;
+        out.push({ front, back });
+      }
+      return out;
+    }
+
+    function buildCards(parsed){
+      // id は front+back から決定（重複は連番で回避）
+      const seen = new Map();
+      return parsed.map((p)=>{
+        const base = (p.front + "||" + p.back).trim();
+        const n = (seen.get(base) || 0) + 1;
+        seen.set(base, n);
+        return {
+          id: n === 1 ? base : `${base}#${n}`,
+          front: p.front,
+          back: p.back
+        };
+      });
+    }
+
+    /********************
+     * デフォルトCSV読込
+     ********************/
+    async function fetchText(url){
+      const res = await fetch(url, { cache: "no-store" });
+      if(!res.ok) throw new Error(`fetch failed: ${url}`);
+      return await res.text();
+    }
+
+    async function loadDefaultCsvText(){
+      let lastErr = null;
+      for(const url of DEFAULT_CSV_CANDIDATES){
+        try{
+          return { text: await fetchText(url), used: url };
+        }catch(e){
+          lastErr = e;
+        }
+      }
+      throw lastErr || new Error("deck_default.csv not found");
+    }
+
+    /********************
+     * 表示
+     ********************/
+    function clampIndex(){
+      if(order.length === 0){ idx = 0; return; }
+      if(idx < 0) idx = 0;
+      if(idx >= order.length) idx = order.length - 1;
+    }
+
+    function currentCard(){
+      if(cards.length === 0 || order.length === 0) return null;
+      const ci = order[idx];
+      return cards[ci] || null;
+    }
+
+    function updateKpis(){
+      elKpiTotal.textContent = String(cards.length || 0);
+      elTotal.textContent = String(cards.length || 0);
+
+      const today = getTodayCount();
+      elKpiToday.textContent = String(today);
+
+      const seenSet = getSeenSet();
+      elSeen.textContent = `seen: ${seenSet.size}`;
+    }
+
+    function render(){
+      updateKpis();
+
+      const c = currentCard();
+      if(!c){
+        elFront.textContent = "データがありません（CSVを確認してください）";
+        elBack.textContent = "";
+        elBack.classList.remove("show");
+        elIdx.textContent = "-";
+        btnToggle.disabled = true;
+        btnPrev.disabled = true;
+        btnNext.disabled = true;
+        return;
       }
 
-      // ---- Swipe: 右=次へ / 左=戻る ----
-      // 既存の「次へ」「戻る」ボタンを探してクリックする方針（ロジック非侵襲）
-      function findActionButton(type){
-        // type: "next" | "prev"
-        const candidates = [];
-        const labelsNext = ["次へ", "次", "NEXT"];
-        const labelsPrev = ["戻", "前", "PREV", "BACK"];
+      btnToggle.disabled = false;
+      btnPrev.disabled = (idx <= 0);
+      btnNext.disabled = (idx >= order.length - 1);
 
-        // 1) data-action
-        document.querySelectorAll("button,[role='button'],a").forEach(el=>{
-          const da = el.getAttribute("data-action");
-          if(type==="next" && da==="next") candidates.push(el);
-          if(type==="prev" && (da==="prev" || da==="back")) candidates.push(el);
-        });
+      elIdx.textContent = String(idx + 1);
+      elFront.textContent = c.front || "(表が空です)";
+      elBack.textContent = c.back || "(裏が空です)";
 
-        // 2) id ありがちなパターン
-        const idListNext = ["btnNext","nextBtn","next","goNext","nextCard"];
-        const idListPrev = ["btnPrev","prevBtn","prev","goPrev","back","prevCard"];
-        const idList = type==="next" ? idListNext : idListPrev;
-        idList.forEach(id=>{
-          const el = document.getElementById(id);
-          if(el) candidates.push(el);
-        });
-
-        // 3) ボタンの表示テキストで推測
-        const labels = type==="next" ? labelsNext : labelsPrev;
-        document.querySelectorAll("button").forEach(b=>{
-          const t = (b.textContent||"").trim();
-          if(labels.some(w=>t.includes(w))) candidates.push(b);
-        });
-
-        return candidates[0] || null;
+      if(showBack){
+        elBack.classList.add("show");
+        btnToggle.textContent = "答えを隠す";
+      }else{
+        elBack.classList.remove("show");
+        btnToggle.textContent = "答えを見る";
       }
+    }
+
+    function markSeen(card){
+      if(!card) return;
+      const seenSet = getSeenSet();
+      if(!seenSet.has(card.id)){
+        seenSet.add(card.id);
+        setSeenSet(seenSet);
+      }
+    }
+
+    function goNext(){
+      if(idx >= order.length - 1) return;
+      idx++;
+      showBack = false;
+      const c = currentCard();
+      markSeen(c);
+      incTodayCount();
+      persistState();
+      render();
+    }
+
+    function goPrev(){
+      if(idx <= 0) return;
+      idx--;
+      showBack = false;
+      const c = currentCard();
+      markSeen(c);
+      // 戻りは「今日」カウントを増やさない（古文単語側に合わせている想定）
+      persistState();
+      render();
+    }
+
+    function toggleBack(){
+      showBack = !showBack;
+      persistState();
+      render();
+    }
+
+    function shuffleOrder(){
+      // Fisher-Yates
+      for(let i=order.length-1; i>0; i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [order[i], order[j]] = [order[j], order[i]];
+      }
+      idx = 0;
+      showBack = false;
+      persistState();
+      render();
+      showToast("シャッフルしました");
+    }
+
+    function resetAll(){
+      localStorage.removeItem(KEY_STATE);
+      localStorage.removeItem(KEY_SEEN);
+      localStorage.removeItem(KEY_TODAY);
+      localStorage.removeItem(KEY_TODAY_DATE);
+      order = cards.map((_,i)=>i);
+      idx = 0;
+      showBack = false;
+      render();
+      showToast("初期化しました");
+    }
+
+    /********************
+     * BGM（初期OFF）
+     ********************/
+    if(btnBgm && audioBgm){
+      btnBgm.addEventListener("click", async ()=>{
+        try{
+          if(btnBgm.dataset.on === "true"){
+            audioBgm.pause();
+            btnBgm.dataset.on = "false";
+            btnBgm.textContent = "BGM: OFF";
+            showToast("BGMを停止");
+          }else{
+            await audioBgm.play(); // ユーザー操作起点
+            btnBgm.dataset.on = "true";
+            btnBgm.textContent = "BGM: ON";
+            showToast("BGMを再生");
+          }
+        }catch(e){
+          showToast("BGMを再生できません（端末設定/操作起点を確認）");
+        }
+      });
+    }
+
+    /********************
+     * Swipe（右=次へ / 左=戻る）
+     * dx<0 : 次へ（右スワイプの“動き”は左方向、つまり指が左へ＝次へ）
+     ********************/
+    (function setupSwipe(){
+      const root = $("swipeRoot");
+      if(!root) return;
 
       let sx=0, sy=0, st=0, moved=false;
       const THRESH = 46;      // px
-      const VERT_GUARD = 1.2; // 縦の比率が強ければ無視
+      const VERT_GUARD = 1.2; // 縦優先比率
 
-      if(root){
-        root.addEventListener("touchstart",(e)=>{
-          const t = e.touches[0];
-          sx = t.clientX; sy = t.clientY; st = Date.now();
-          moved = false;
-        }, {passive:true});
+      root.addEventListener("touchstart",(e)=>{
+        const t = e.touches[0];
+        sx = t.clientX; sy = t.clientY; st = Date.now();
+        moved = false;
+      }, {passive:true});
 
-        root.addEventListener("touchmove",(e)=>{
-          moved = true;
-        }, {passive:true});
+      root.addEventListener("touchmove",()=>{
+        moved = true;
+      }, {passive:true});
 
-        root.addEventListener("touchend",(e)=>{
-          const t = e.changedTouches[0];
-          const dx = t.clientX - sx;
-          const dy = t.clientY - sy;
-          const dt = Date.now() - st;
+      root.addEventListener("touchend",(e)=>{
+        const t = e.changedTouches[0];
+        const dx = t.clientX - sx;
+        const dy = t.clientY - sy;
+        const dt = Date.now() - st;
 
-          if(!moved) return;
-          if(dt > 700) return;
+        if(!moved) return;
+        if(dt > 700) return;
+        if(Math.abs(dy) > Math.abs(dx) * VERT_GUARD) return;
 
-          // 縦スクロール優先
-          if(Math.abs(dy) > Math.abs(dx) * VERT_GUARD) return;
-
-          if(Math.abs(dx) >= THRESH){
-            if(dx < 0){
-              const nextBtn = findActionButton("next");
-              if(nextBtn){ nextBtn.click(); showToast("次へ"); }
-              else showToast("次へボタンが見つかりません");
+        if(Math.abs(dx) >= THRESH){
+          if(dx < 0){
+            if(idx < order.length - 1){
+              goNext();
+              showToast("次へ");
+            }
+          }else{
+            if(idx > 0){
+              goPrev();
+              showToast("前へ戻る");
             }else{
-              const prevBtn = findActionButton("prev");
-              if(prevBtn){ prevBtn.click(); showToast("前へ戻る"); }
-              else showToast("戻る操作は未設定（戻るボタンを data-action='prev' で指定可）");
+              showToast("これ以上戻れません");
             }
           }
-        }, {passive:true});
-      }
-
-      // 既存UIに「戻る」ボタンが無い場合の救済:
-      // 「前へ戻る」を成立させたいなら、既存UI内の戻る要素に data-action="prev" を付けるだけでOK。
-      // 例: <button data-action="prev">戻る</button>
-
+        }
+      }, {passive:true});
     })();
+
+    /********************
+     * CSVインポート（メンテ）
+     ********************/
+    fileCsv.addEventListener("change", async ()=>{
+      const f = fileCsv.files && fileCsv.files[0];
+      if(!f) return;
+      try{
+        const text = await f.text();
+        const parsed = parseCSV(text);
+        const built = buildCards(parsed);
+        if(built.length === 0){
+          showToast("CSVが空です");
+          return;
+        }
+        cards = built;
+        order = cards.map((_,i)=>i);
+        idx = 0;
+        showBack = false;
+
+        elKpiCsv.textContent = f.name;
+        elKpiUpdated.textContent = new Date().toLocaleString();
+
+        // インポート時は「見た記録」などを残す/消すは運用次第だが、事故回避で残す
+        persistState();
+        render();
+        showToast("CSVを読み込みました");
+      }catch(e){
+        showToast("CSV読み込みに失敗しました");
+      }finally{
+        fileCsv.value = "";
+      }
+    });
+
+    btnLoadDefault.addEventListener("click", async ()=>{
+      await boot(true);
+    });
+
+    /********************
+     * ボタンイベント
+     ********************/
+    btnNext.addEventListener("click", ()=>{
+      if(idx < order.length - 1){
+        goNext();
+        showToast("次へ");
+      }
+    });
+    btnPrev.addEventListener("click", ()=>{
+      if(idx > 0){
+        goPrev();
+        showToast("前へ戻る");
+      }else{
+        showToast("これ以上戻れません");
+      }
+    });
+    btnToggle.addEventListener("click", toggleBack);
+    btnShuffle.addEventListener("click", shuffleOrder);
+
+    btnResetToday.addEventListener("click", ()=>{
+      resetTodayCount();
+      render();
+      showToast("今日カウントをリセット");
+    });
+
+    btnResetAll.addEventListener("click", ()=>{
+      const ok = confirm("進捗と今日カウントを初期化します。よろしいですか？");
+      if(!ok) return;
+      resetAll();
+    });
+
+    /********************
+     * 起動
+     ********************/
+    async function boot(forceReload=false){
+      try{
+        elFront.textContent = "読み込み中…";
+        elBack.textContent = "";
+        elBack.classList.remove("show");
+        btnToggle.disabled = true;
+        btnPrev.disabled = true;
+        btnNext.disabled = true;
+
+        // 状態復元
+        if(!forceReload) restoreState();
+
+        // ✅ デフォルトCSV読込
+        const { text, used } = await loadDefaultCsvText();
+        const parsed = parseCSV(text);
+        const built = buildCards(parsed);
+
+        if(built.length === 0){
+          cards = [];
+          order = [];
+          idx = 0;
+          showBack = false;
+          elKpiCsv.textContent = used.replace("./","");
+          elKpiUpdated.textContent = new Date().toLocaleString();
+          render();
+          showToast("デフォルトCSVが空です");
+          return;
+        }
+
+        cards = built;
+
+        // orderの妥当性チェック（CSV更新で長さ変化するため）
+        const okOrder = Array.isArray(order) && order.length === cards.length && order.every(n=>Number.isInteger(n) && n>=0 && n<cards.length);
+        if(!okOrder){
+          order = cards.map((_,i)=>i);
+          idx = 0;
+          showBack = false;
+        }
+        clampIndex();
+
+        // KPI表示
+        elKpiCsv.textContent = used.replace("./","");
+        elKpiUpdated.textContent = new Date().toLocaleString();
+
+        // 初回表示カードを記録
+        const c = currentCard();
+        markSeen(c);
+
+        persistState();
+        render();
+      }catch(e){
+        cards = [];
+        order = [];
+        idx = 0;
+        showBack = false;
+        render();
+        showToast("deck_default.csv を読み込めません（配置/名前を確認）");
+      }
+    }
+
+    // 起動
+    boot(false);
   </script>
 
-  <!-- =========================
-    ここに「既存の script 一式（学習ロジック／SW登録含む）」をそのまま入れる
-    ※既存JSは壊さない（そのまま末尾に置く）
-    ========================= -->
-  <!-- LEGACY SCRIPTS START -->
-  <!-- ✅ 助動詞リポの現行 index.html から、<script>...</script> / <script src=...> を全部コピペ -->
-  <!-- LEGACY SCRIPTS END -->
+  <!-- ========= PWA / SW register（古文単語側と同等方針：reg.update()） ========= -->
+  <script>
+    (function(){
+      // sw.js が存在する前提（無い場合は何もしない）
+      if(!("serviceWorker" in navigator)) return;
 
+      window.addEventListener("load", async ()=>{
+        try{
+          const reg = await navigator.serviceWorker.register("./sw.js");
+
+          // ✅ 反映されない対策：即時 update
+          try { await reg.update(); } catch {}
+
+          // 更新検知（必要なら自動リロードを入れるが、授業中の事故回避で「通知のみ」）
+          reg.addEventListener("updatefound", ()=>{
+            // ここでUI通知に留める
+            // showToast はスコープ外なので素朴に console
+            console.log("[SW] updatefound");
+          });
+        }catch(e){
+          // SWが無い/失敗しても動作は継続
+          console.log("[SW] register failed", e);
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
