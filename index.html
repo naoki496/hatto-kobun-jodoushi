@@ -4,27 +4,29 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#07080b" />
-  <title>八東助動詞修行</title>
-
-  <!-- （任意）PWAを使っている場合：manifestがあるなら有効に -->
-  <!-- <link rel="manifest" href="./manifest.json"> -->
+  <title>八東助動詞</title>
 
   <style>
     :root{
       --bg:#07080b;
+
+      /* ✅ Amber theme */
+      --accent:#FFB020;     /* amber core */
+      --accent2:#FF7A18;    /* orange-amber */
+      --ok:#5cffb7;
+      --danger:#ff5c7a;
+
       --panel:rgba(255,255,255,.06);
       --panel2:rgba(255,255,255,.10);
       --border:rgba(255,255,255,.14);
       --text:rgba(255,255,255,.92);
       --muted:rgba(255,255,255,.62);
-      --accent:#B56CFF;       /* violet */
-      --accent2:#62d6ff;      /* cyan */
-      --ok:#5cffb7;
-      --danger:#ff5c7a;
+
       --radius:18px;
       --shadow:0 18px 60px rgba(0,0,0,.45);
       --minTap:44px;
       --maxW:980px;
+
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
               "Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",
@@ -37,9 +39,9 @@
       color:var(--text);
       font-family:var(--sans);
       background:
-        radial-gradient(1200px 600px at 20% 10%, rgba(181,108,255,.22), transparent 60%),
-        radial-gradient(900px 520px at 85% 18%, rgba(98,214,255,.16), transparent 60%),
-        radial-gradient(900px 520px at 60% 110%, rgba(92,255,183,.10), transparent 60%),
+        radial-gradient(1200px 600px at 18% 12%, rgba(255,176,32,.20), transparent 60%),
+        radial-gradient(980px 560px at 86% 16%, rgba(255,122,24,.14), transparent 62%),
+        radial-gradient(900px 520px at 60% 110%, rgba(92,255,183,.08), transparent 60%),
         linear-gradient(180deg, #06070a, #04050a 55%, #020309);
       overflow-x:hidden;
     }
@@ -60,17 +62,21 @@
     .brand{
       display:flex;
       flex-direction:column;
-      gap:6px;
+      gap:4px;
     }
     .brand h1{
       margin:0;
       font-size:20px;
       letter-spacing:.02em;
+      display:flex;
+      align-items:center;
+      gap:10px;
     }
-    .brand .sub{
-      color:var(--muted);
-      font-size:12.5px;
-      line-height:1.35;
+    .brandMark{
+      width:10px;height:10px;border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 18px rgba(255,176,32,.55);
+      flex:0 0 auto;
     }
 
     .glass{
@@ -103,10 +109,10 @@
     .dot{
       width:8px;height:8px;border-radius:99px;
       background:var(--accent);
-      box-shadow:0 0 16px rgba(181,108,255,.55);
+      box-shadow:0 0 16px rgba(255,176,32,.55);
     }
-    .dot.cyan{ background:var(--accent2); box-shadow:0 0 16px rgba(98,214,255,.45); }
     .dot.ok{ background:var(--ok); box-shadow:0 0 16px rgba(92,255,183,.35); }
+    .dot.dim{ background:rgba(255,255,255,.28); box-shadow:none; }
 
     .main{
       display:grid;
@@ -116,133 +122,33 @@
 
     .card{
       padding:16px 14px;
+      position:relative;
+      overflow:hidden;
     }
+
+    /* subtle animated glow band */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius:inherit;
+      background:
+        radial-gradient(520px 220px at 30% 0%, rgba(255,176,32,.16), transparent 55%),
+        radial-gradient(420px 220px at 90% 10%, rgba(255,122,24,.12), transparent 55%);
+      pointer-events:none;
+      opacity:.95;
+    }
+    .card > *{ position:relative; }
 
     .cardHeader{
       display:flex;
-      justify-content:space-between;
+      justify-content:flex-end;
       align-items:center;
       gap:10px;
       margin-bottom:10px;
     }
 
-    .deckMeta{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      color:var(--muted);
-      font-size:12px;
-      align-items:center;
-    }
-    .deckMeta code{
-      font-family:var(--mono);
-      font-size:12px;
-      color:rgba(255,255,255,.80);
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      padding:3px 6px;
-      border-radius:8px;
-    }
-
-    .pulse5{ position:relative; }
-    .pulse5::after{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      border-radius:inherit;
-      border:1px solid rgba(181,108,255,.50);
-      animation:pulse 1.7s ease-in-out infinite;
-      pointer-events:none;
-    }
-    @keyframes pulse{
-      0%{ opacity:.15; box-shadow:0 0 0 0 rgba(181,108,255,.0); }
-      50%{ opacity:.55; box-shadow:0 0 0 8px rgba(181,108,255,.10); }
-      100%{ opacity:.15; box-shadow:0 0 0 0 rgba(181,108,255,.0); }
-    }
-
-    /* Flashcard */
-    .fc{
-      border:1px solid rgba(255,255,255,.16);
-      border-radius:18px;
-      background:rgba(255,255,255,.04);
-      overflow:hidden;
-    }
-
-    .fcTop{
-      padding:14px 14px 10px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-    }
-    .status{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.35;
-    }
-    .status strong{ color:rgba(255,255,255,.86); }
-    .navArrows{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-
-    .fcBody{
-      padding:16px 14px 18px;
-      min-height:170px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .front{
-      font-size:20px;
-      letter-spacing:.02em;
-      line-height:1.42;
-      white-space:pre-wrap;
-    }
-    .back{
-      font-size:16px;
-      color:rgba(255,255,255,.82);
-      line-height:1.60;
-      white-space:pre-wrap;
-      padding-top:10px;
-      border-top:1px dashed rgba(255,255,255,.14);
-      display:none;
-    }
-    .back.show{ display:block; }
-
-    .hintRow{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-top:10px;
-      color:var(--muted);
-      font-size:12px;
-    }
-    .swipeHint{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      user-select:none;
-    }
-    .swipeBadge{
-      font-family:var(--mono);
-      font-size:12px;
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.05);
-      color:rgba(255,255,255,.78);
-    }
-
-    .btnRow{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:12px;
-    }
+    /* Buttons */
     button{
       appearance:none;
       border:1px solid var(--border);
@@ -258,16 +164,16 @@
       touch-action:manipulation;
     }
     button:hover{
-      border-color:rgba(181,108,255,.45);
-      box-shadow:0 0 0 3px rgba(181,108,255,.18), 0 18px 50px rgba(0,0,0,.25);
-      background:rgba(181,108,255,.08);
+      border-color:rgba(255,176,32,.45);
+      box-shadow:0 0 0 3px rgba(255,176,32,.16), 0 18px 50px rgba(0,0,0,.25);
+      background:rgba(255,176,32,.06);
     }
     button:active{ transform: translateY(1px); }
 
     .primaryBtn{
-      background:linear-gradient(180deg, rgba(181,108,255,.22), rgba(255,255,255,.06));
-      border-color:rgba(181,108,255,.55);
-      box-shadow:0 0 0 2px rgba(181,108,255,.18);
+      background:linear-gradient(180deg, rgba(255,176,32,.20), rgba(255,255,255,.06));
+      border-color:rgba(255,176,32,.55);
+      box-shadow:0 0 0 2px rgba(255,176,32,.16);
     }
     .secondaryBtn{ background:rgba(255,255,255,.05); }
     .ghostBtn{
@@ -293,6 +199,161 @@
       line-height:1;
     }
 
+    /* Flashcard */
+    .fc{
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:18px;
+      background:rgba(255,255,255,.04);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .fcTop{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .status{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+    .status strong{ color:rgba(255,255,255,.86); }
+
+    .navArrows{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    .fcBody{
+      padding:16px 14px 18px;
+      min-height:175px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .front{
+      font-size:20px;
+      letter-spacing:.02em;
+      line-height:1.42;
+      white-space:pre-wrap;
+    }
+    .back{
+      font-size:16px;
+      color:rgba(255,255,255,.82);
+      line-height:1.60;
+      white-space:pre-wrap;
+      padding-top:10px;
+      border-top:1px dashed rgba(255,255,255,.14);
+      display:none;
+    }
+    .back.show{ display:block; }
+
+    .btnRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    /* ✅ Swipe affordance (always visible, subtle) */
+    .swipeAfford{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+      user-select:none;
+    }
+
+    .affSide{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .affPills{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .affPill{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      color:rgba(255,255,255,.78);
+      white-space:nowrap;
+    }
+
+    .chev{
+      width:30px;
+      height:18px;
+      display:inline-block;
+      position:relative;
+      opacity:.80;
+      filter: drop-shadow(0 0 10px rgba(255,176,32,.12));
+    }
+    .chev::before, .chev::after{
+      content:"";
+      position:absolute;
+      top:50%;
+      width:10px;
+      height:10px;
+      border-right:2px solid rgba(255,255,255,.75);
+      border-bottom:2px solid rgba(255,255,255,.75);
+      transform: translateY(-50%) rotate(135deg);
+      opacity:.75;
+      animation: nudgeL 1.4s ease-in-out infinite;
+    }
+    .chev::after{
+      left:12px;
+      opacity:.42;
+      animation-delay:.14s;
+    }
+    .chev.left::before, .chev.left::after{
+      transform: translateY(-50%) rotate(315deg);
+      animation-name:nudgeR;
+    }
+
+    @keyframes nudgeL{
+      0%{ transform: translate(0, -50%) rotate(135deg); opacity:.55; }
+      50%{ transform: translate(-6px, -50%) rotate(135deg); opacity:.85; }
+      100%{ transform: translate(0, -50%) rotate(135deg); opacity:.55; }
+    }
+    @keyframes nudgeR{
+      0%{ transform: translate(0, -50%) rotate(315deg); opacity:.55; }
+      50%{ transform: translate(6px, -50%) rotate(315deg); opacity:.85; }
+      100%{ transform: translate(0, -50%) rotate(315deg); opacity:.55; }
+    }
+
+    /* Edge glow when swiping */
+    .edgeGlow{
+      pointer-events:none;
+      position:absolute;
+      inset:0;
+      opacity:0;
+      transition: opacity .15s ease;
+    }
+    .edgeGlow.on{ opacity:1; }
+    .edgeGlow.left{
+      background: radial-gradient(520px 220px at 0% 50%, rgba(255,176,32,.22), transparent 60%);
+    }
+    .edgeGlow.right{
+      background: radial-gradient(520px 220px at 100% 50%, rgba(255,176,32,.22), transparent 60%);
+    }
+
     .toast{
       position:fixed;
       left:50%;
@@ -316,7 +377,7 @@
       transform:translateX(-50%) translateY(-2px);
     }
 
-    /* スワイプの誤爆（縦スクロール）対策 */
+    /* スワイプ誤爆（縦スクロール）対策 */
     .swipeArea{ touch-action: pan-y; }
 
     .smallNote{
@@ -356,6 +417,7 @@
       margin-top:10px;
       color:rgba(255,255,255,.84);
     }
+
     .row2{
       display:grid;
       grid-template-columns: 1fr;
@@ -371,6 +433,7 @@
       font-size:12px;
       color:rgba(255,255,255,.80);
     }
+    .muted{ color:var(--muted); }
   </style>
 </head>
 
@@ -378,26 +441,22 @@
   <div class="wrap swipeArea" id="swipeRoot">
     <div class="topbar">
       <div class="brand">
-        <h1>八東助動詞修行</h1>
-        <div class="sub">八東国語LOBBY準拠 / 左右スワイプ / BGM（初期OFF）</div>
+        <h1><span class="brandMark"></span>八東助動詞</h1>
+        <!-- ✅ 要望により：上部の説明文は削除（何も出さない） -->
       </div>
 
+      <!-- ✅ 要望により：デッキ表示は削除（総数・今日のみ） -->
       <div class="kpis">
-        <div class="pill"><span class="dot"></span><span>総数：</span><strong id="kpiTotal">-</strong></div>
-        <div class="pill"><span class="dot cyan"></span><span>今日：</span><strong id="kpiToday">-</strong></div>
-        <div class="pill"><span class="dot ok"></span><span>デッキ：</span><strong id="kpiDeck">default</strong></div>
+        <div class="pill"><span class="dot"></span><span>総数</span><strong id="kpiTotal">-</strong></div>
+        <div class="pill"><span class="dot ok"></span><span>今日</span><strong id="kpiToday">-</strong></div>
       </div>
     </div>
 
     <div class="main">
-      <section class="glass card pulse5" id="uiCardPanel">
+      <section class="glass card" id="uiCardPanel">
         <div class="cardHeader">
-          <div class="deckMeta">
-            <span>CSV：</span><code id="kpiCsv">deck_default.csv</code>
-            <span>更新：</span><code id="kpiUpdated">-</code>
-          </div>
-
-          <!-- BGM -->
+          <!-- ✅ CSV名/更新表示はUIから撤去（内部保持） -->
+          <!-- BGMだけ右上に配置 -->
           <button class="secondaryBtn bgmBtn" id="btnBgm" data-on="false" type="button">BGM: OFF</button>
           <audio id="bgmAudio" preload="none" loop>
             <source src="./assets/bgm/study.mp3" type="audio/mpeg" />
@@ -405,6 +464,9 @@
         </div>
 
         <div class="fc" id="cardBox" aria-live="polite">
+          <div class="edgeGlow left" id="glowLeft"></div>
+          <div class="edgeGlow right" id="glowRight"></div>
+
           <div class="fcTop">
             <div class="status" id="statusText">
               <strong id="idxText">-</strong>
@@ -429,22 +491,33 @@
               <button class="ghostBtn" id="btnResetToday" type="button">今日カウントをリセット</button>
             </div>
 
-            <div class="smallNote" id="noteText">
-              まず <span class="mono">deck_default.csv</span> を読み込みます。BGMはボタン操作後に再生できます。
-            </div>
-          </div>
-        </div>
+            <!-- ✅ スワイプの意味が「見て」分かるように常時表示＋軽アニメ -->
+            <div class="swipeAfford" aria-label="swipe affordance">
+              <div class="affSide">
+                <span class="chev left" aria-hidden="true"></span>
+                <div class="affPills">
+                  <span class="affPill">←</span>
+                  <span class="muted">戻る</span>
+                </div>
+              </div>
 
-        <div class="hintRow">
-          <div class="swipeHint" aria-label="swipe hint">
-            <span class="swipeBadge">←</span><span>戻る</span>
-            <span style="opacity:.45;">/</span>
-            <span class="swipeBadge">→</span><span>次へ</span>
-            <span style="opacity:.45;">/</span>
-            <span>swipe</span>
-          </div>
-          <div class="swipeHint" style="justify-content:flex-end;">
-            <span style="opacity:.7;">操作：</span><span>左右スワイプ対応</span>
+              <div class="affSide" style="justify-content:center; flex:1;">
+                <span class="muted" style="white-space:nowrap;">左右スワイプでも操作できます</span>
+              </div>
+
+              <div class="affSide" style="justify-content:flex-end;">
+                <div class="affPills">
+                  <span class="muted">次へ</span>
+                  <span class="affPill">→</span>
+                </div>
+                <span class="chev" aria-hidden="true"></span>
+              </div>
+            </div>
+
+            <!-- 目立たせすぎない一言だけ（必要最低限） -->
+            <div class="smallNote">
+              ※BGMはボタン操作後に再生できます（自動再生はしません）
+            </div>
           </div>
         </div>
       </section>
@@ -465,6 +538,7 @@
               <div class="btnRow">
                 <button class="secondaryBtn" id="btnLoadDefault" type="button">デフォルトCSVを再読込</button>
               </div>
+              <!-- 内部状態の可視化はしない方針：ここでもCSV名/更新は表示しない -->
             </div>
 
             <div class="glass" style="padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);box-shadow:none;">
@@ -490,7 +564,7 @@
     /********************
      * 基本設定（助動詞）
      ********************/
-    const STORAGE_PREFIX = "hattoJodoushiFlash.v1";  // ※衝突回避のため助動詞専用
+    const STORAGE_PREFIX = "hattoJodoushiFlash.v1";
     const KEY_STATE      = STORAGE_PREFIX + ".state";
     const KEY_SEEN       = STORAGE_PREFIX + ".seenIds";
     const KEY_TODAY      = STORAGE_PREFIX + ".today";
@@ -501,6 +575,10 @@
       "./deck_default.csv",
       "./assets/deck_default.csv",
     ];
+
+    // ✅ 内部用（UIには出さない）
+    let internalCsvUsed = "deck_default.csv";
+    let internalUpdatedAt = "";
 
     /********************
      * UI参照
@@ -514,8 +592,6 @@
     const elSeen  = $("seenText");
     const elKpiTotal = $("kpiTotal");
     const elKpiToday = $("kpiToday");
-    const elKpiUpdated = $("kpiUpdated");
-    const elKpiCsv = $("kpiCsv");
     const elToast = $("toast");
 
     const btnPrev = $("btnPrev");
@@ -530,6 +606,9 @@
     const btnBgm = $("btnBgm");
     const audioBgm = $("bgmAudio");
 
+    const glowLeft = $("glowLeft");
+    const glowRight = $("glowRight");
+
     $("storageKeyHint").textContent = STORAGE_PREFIX;
 
     /********************
@@ -541,7 +620,6 @@
     let showBack = false;
 
     function todayKey(){
-      // 端末ローカル日付（ISO YYYY-MM-DD）
       const d = new Date();
       const y = d.getFullYear();
       const m = String(d.getMonth()+1).padStart(2,"0");
@@ -555,6 +633,14 @@
       elToast.classList.add("show");
       clearTimeout(showToast._t);
       showToast._t = setTimeout(()=>elToast.classList.remove("show"), 1100);
+    }
+
+    function flashGlow(dir){
+      if(!glowLeft || !glowRight) return;
+      const el = dir === "left" ? glowLeft : glowRight;
+      el.classList.add("on");
+      clearTimeout(flashGlow._t);
+      flashGlow._t = setTimeout(()=>el.classList.remove("on"), 180);
     }
 
     function loadJSON(key, fallback){
@@ -619,10 +705,6 @@
     }
 
     function parseCSV(text){
-      // RFC完全準拠ではないが、教育用途のCSVに十分な堅牢性を持たせる
-      // ・ダブルクォート囲み
-      // ・カンマ区切り
-      // ・改行は \n / \r\n
       const rows = [];
       let i=0, field="", row=[], inQuotes=false;
 
@@ -640,7 +722,6 @@
           if(c === ','){ row.push(field); field=""; i++; continue; }
           if(c === '\n'){
             row.push(field); field="";
-            // row が空行っぽい場合は除外
             if(row.some(v => String(v).trim() !== "")) rows.push(row);
             row = [];
             i++; continue;
@@ -649,13 +730,11 @@
           field += c; i++; continue;
         }
       }
-      // last
       row.push(field);
       if(row.some(v => String(v).trim() !== "")) rows.push(row);
 
       if(rows.length === 0) return [];
 
-      // header
       const header = rows[0].map(normalizeHeader);
       const dataRows = rows.slice(1);
 
@@ -664,8 +743,6 @@
 
       const frontIdx = header.findIndex(h => frontKeys.has(h));
       const backIdx  = header.findIndex(h => backKeys.has(h));
-
-      // ヘッダが無い/崩れている場合は「1列目=表、2列目=裏」とみなす
       const useHeader = (frontIdx !== -1 || backIdx !== -1);
 
       const out = [];
@@ -682,7 +759,6 @@
     }
 
     function buildCards(parsed){
-      // id は front+back から決定（重複は連番で回避）
       const seen = new Map();
       return parsed.map((p)=>{
         const base = (p.front + "||" + p.back).trim();
@@ -709,7 +785,8 @@
       let lastErr = null;
       for(const url of DEFAULT_CSV_CANDIDATES){
         try{
-          return { text: await fetchText(url), used: url };
+          const text = await fetchText(url);
+          return { text, used: url };
         }catch(e){
           lastErr = e;
         }
@@ -801,7 +878,6 @@
       showBack = false;
       const c = currentCard();
       markSeen(c);
-      // 戻りは「今日」カウントを増やさない（古文単語側に合わせている想定）
       persistState();
       render();
     }
@@ -813,7 +889,6 @@
     }
 
     function shuffleOrder(){
-      // Fisher-Yates
       for(let i=order.length-1; i>0; i--){
         const j = Math.floor(Math.random()*(i+1));
         [order[i], order[j]] = [order[j], order[i]];
@@ -849,7 +924,7 @@
             btnBgm.textContent = "BGM: OFF";
             showToast("BGMを停止");
           }else{
-            await audioBgm.play(); // ユーザー操作起点
+            await audioBgm.play();
             btnBgm.dataset.on = "true";
             btnBgm.textContent = "BGM: ON";
             showToast("BGMを再生");
@@ -861,16 +936,15 @@
     }
 
     /********************
-     * Swipe（右=次へ / 左=戻る）
-     * dx<0 : 次へ（右スワイプの“動き”は左方向、つまり指が左へ＝次へ）
+     * Swipe（右=次へ / 左=戻る）+ 視覚エフェクト
      ********************/
     (function setupSwipe(){
       const root = $("swipeRoot");
       if(!root) return;
 
       let sx=0, sy=0, st=0, moved=false;
-      const THRESH = 46;      // px
-      const VERT_GUARD = 1.2; // 縦優先比率
+      const THRESH = 46;
+      const VERT_GUARD = 1.2;
 
       root.addEventListener("touchstart",(e)=>{
         const t = e.touches[0];
@@ -878,9 +952,7 @@
         moved = false;
       }, {passive:true});
 
-      root.addEventListener("touchmove",()=>{
-        moved = true;
-      }, {passive:true});
+      root.addEventListener("touchmove",()=>{ moved = true; }, {passive:true});
 
       root.addEventListener("touchend",(e)=>{
         const t = e.changedTouches[0];
@@ -894,15 +966,23 @@
 
         if(Math.abs(dx) >= THRESH){
           if(dx < 0){
+            // 指が左へ = 次へ
             if(idx < order.length - 1){
+              flashGlow("right");
               goNext();
               showToast("次へ");
+            }else{
+              flashGlow("right");
+              showToast("最後のカードです");
             }
           }else{
+            // 指が右へ = 戻る
             if(idx > 0){
+              flashGlow("left");
               goPrev();
               showToast("前へ戻る");
             }else{
+              flashGlow("left");
               showToast("これ以上戻れません");
             }
           }
@@ -929,10 +1009,10 @@
         idx = 0;
         showBack = false;
 
-        elKpiCsv.textContent = f.name;
-        elKpiUpdated.textContent = new Date().toLocaleString();
+        // ✅ 内部にだけ保持（UIに出さない）
+        internalCsvUsed = f.name;
+        internalUpdatedAt = new Date().toLocaleString();
 
-        // インポート時は「見た記録」などを残す/消すは運用次第だが、事故回避で残す
         persistState();
         render();
         showToast("CSVを読み込みました");
@@ -952,15 +1032,21 @@
      ********************/
     btnNext.addEventListener("click", ()=>{
       if(idx < order.length - 1){
+        flashGlow("right");
         goNext();
         showToast("次へ");
+      }else{
+        flashGlow("right");
+        showToast("最後のカードです");
       }
     });
     btnPrev.addEventListener("click", ()=>{
       if(idx > 0){
+        flashGlow("left");
         goPrev();
         showToast("前へ戻る");
       }else{
+        flashGlow("left");
         showToast("これ以上戻れません");
       }
     });
@@ -991,10 +1077,8 @@
         btnPrev.disabled = true;
         btnNext.disabled = true;
 
-        // 状態復元
         if(!forceReload) restoreState();
 
-        // ✅ デフォルトCSV読込
         const { text, used } = await loadDefaultCsvText();
         const parsed = parseCSV(text);
         const built = buildCards(parsed);
@@ -1004,8 +1088,10 @@
           order = [];
           idx = 0;
           showBack = false;
-          elKpiCsv.textContent = used.replace("./","");
-          elKpiUpdated.textContent = new Date().toLocaleString();
+
+          internalCsvUsed = used.replace("./","");
+          internalUpdatedAt = new Date().toLocaleString();
+
           render();
           showToast("デフォルトCSVが空です");
           return;
@@ -1013,8 +1099,10 @@
 
         cards = built;
 
-        // orderの妥当性チェック（CSV更新で長さ変化するため）
-        const okOrder = Array.isArray(order) && order.length === cards.length && order.every(n=>Number.isInteger(n) && n>=0 && n<cards.length);
+        const okOrder = Array.isArray(order)
+          && order.length === cards.length
+          && order.every(n=>Number.isInteger(n) && n>=0 && n<cards.length);
+
         if(!okOrder){
           order = cards.map((_,i)=>i);
           idx = 0;
@@ -1022,11 +1110,9 @@
         }
         clampIndex();
 
-        // KPI表示
-        elKpiCsv.textContent = used.replace("./","");
-        elKpiUpdated.textContent = new Date().toLocaleString();
+        internalCsvUsed = used.replace("./","");
+        internalUpdatedAt = new Date().toLocaleString();
 
-        // 初回表示カードを記録
         const c = currentCard();
         markSeen(c);
 
@@ -1042,31 +1128,22 @@
       }
     }
 
-    // 起動
     boot(false);
   </script>
 
-  <!-- ========= PWA / SW register（古文単語側と同等方針：reg.update()） ========= -->
+  <!-- ========= PWA / SW register（reg.update()） ========= -->
   <script>
     (function(){
-      // sw.js が存在する前提（無い場合は何もしない）
       if(!("serviceWorker" in navigator)) return;
 
       window.addEventListener("load", async ()=>{
         try{
           const reg = await navigator.serviceWorker.register("./sw.js");
-
-          // ✅ 反映されない対策：即時 update
           try { await reg.update(); } catch {}
-
-          // 更新検知（必要なら自動リロードを入れるが、授業中の事故回避で「通知のみ」）
           reg.addEventListener("updatefound", ()=>{
-            // ここでUI通知に留める
-            // showToast はスコープ外なので素朴に console
             console.log("[SW] updatefound");
           });
         }catch(e){
-          // SWが無い/失敗しても動作は継続
           console.log("[SW] register failed", e);
         }
       });
