@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#07080b" />
-  <title>八東助動詞</title>
+  <title>助動詞確認</title>
 
   <style>
     :root{
@@ -569,6 +569,9 @@
     const KEY_SEEN       = STORAGE_PREFIX + ".seenIds";
     const KEY_TODAY      = STORAGE_PREFIX + ".today";
     const KEY_TODAY_DATE = STORAGE_PREFIX + ".todayDate";
+    // ✅ Lobby (FLASH DAILY) 連携キー：助動詞確認
+    const LOBBY_TODAY_KEY      = "hk.flash.jodoushi.todaySeen";
+    const LOBBY_TODAY_DATE_KEY = "hk.flash.jodoushi.todayYMD";
 
     // ✅ デフォルト読み込み：deck_default.csv 固定
     const DEFAULT_CSV_CANDIDATES = [
@@ -664,23 +667,38 @@
     }
 
     function getTodayCount(){
-      const t = todayKey();
-      const savedDate = localStorage.getItem(KEY_TODAY_DATE);
-      if(savedDate !== t){
-        localStorage.setItem(KEY_TODAY_DATE, t);
-        localStorage.setItem(KEY_TODAY, "0");
-        return 0;
-      }
-      return Number(localStorage.getItem(KEY_TODAY) || "0") || 0;
-    }
-    function incTodayCount(){
+  const t = todayKey();
+
+  const savedDate = localStorage.getItem(KEY_TODAY_DATE);
+  const lobbyDate = localStorage.getItem(LOBBY_TODAY_DATE_KEY);
+
+  // どちらかが今日でなければ、両方「今日扱い」に揃えて0リセット
+  if(savedDate !== t || lobbyDate !== t){
+    localStorage.setItem(KEY_TODAY_DATE, t);
+    localStorage.setItem(KEY_TODAY, "0");
+    localStorage.setItem(LOBBY_TODAY_DATE_KEY, t);
+    localStorage.setItem(LOBBY_TODAY_KEY, "0");
+    return 0;
+  }
+
+  // 内部値を正とし、ロビー側がズレてたら同期
+  const v  = Number(localStorage.getItem(KEY_TODAY) || "0") || 0;
+  const lv = Number(localStorage.getItem(LOBBY_TODAY_KEY) || "0") || 0;
+  if(lv !== v) localStorage.setItem(LOBBY_TODAY_KEY, String(v));
+  return v;
+}
+   function incTodayCount(){
       const c = getTodayCount() + 1;
       localStorage.setItem(KEY_TODAY, String(c));
+      localStorage.setItem(LOBBY_TODAY_KEY, String(c)); // ✅ ロビー連携
       return c;
     }
-    function resetTodayCount(){
-      localStorage.setItem(KEY_TODAY_DATE, todayKey());
+   function resetTodayCount(){
+      const t = todayKey();
+      localStorage.setItem(KEY_TODAY_DATE, t);
       localStorage.setItem(KEY_TODAY, "0");
+      localStorage.setItem(LOBBY_TODAY_DATE_KEY, t); // ✅ ロビー連携
+      localStorage.setItem(LOBBY_TODAY_KEY, "0");    // ✅ ロビー連携
       return 0;
     }
 
@@ -905,6 +923,8 @@
       localStorage.removeItem(KEY_SEEN);
       localStorage.removeItem(KEY_TODAY);
       localStorage.removeItem(KEY_TODAY_DATE);
+      localStorage.removeItem(LOBBY_TODAY_KEY);
+      localStorage.removeItem(LOBBY_TODAY_DATE_KEY);
       order = cards.map((_,i)=>i);
       idx = 0;
       showBack = false;
